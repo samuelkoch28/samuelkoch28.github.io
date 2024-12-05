@@ -1,0 +1,40 @@
+name: Update index.html
+
+on:
+  push:
+    branches:
+      - main  # Trigger bei Pushes in den main-Branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checke den Repository-Code aus
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Installiere Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    # Installiere die Markdown-Bibliothek
+    - name: Install necessary packages
+      run: pip install -r requirements.txt
+
+    # Führe das Python-Skript aus
+    - name: Convert README.md to index.html
+      run: python convert.py
+
+    # Commit und push die Änderungen
+    - name: Commit changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add index.html
+        git commit -m 'Update index.html from README.md [skip ci]' || echo "No changes to commit"
+
+    - name: Push changes
+      run: git push
